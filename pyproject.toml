@@ -6,8 +6,8 @@ authors = ["Cédric Bonhomme <cedric@cedricbonhomme.org>"]
 license = "GPL-3.0-or-later"
 readme = "README.md"
 
-homepage = ""
-repository = ""
+# homepage = ""
+# repository = ""
 
 keywords = ["Vulnerability-Lookup", "Vulnerability", "CVE", "Nuclei"]
 

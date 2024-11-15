@@ -5,9 +5,7 @@ The gathered data is subsequently transmitted to the
 [Vulnerability-Lookup](https://github.com/cve-search/vulnerability-lookup) API.
 
 
-## Usage
-
-### Installation
+## Installation
 
 [pipx](https://github.com/pypa/pipx) is an easy way to install and run Python applications in isolated environments.
 It's easy to [install](https://github.com/pypa/pipx?tab=readme-ov-file#on-linux).
@@ -20,6 +18,20 @@ $ git clone https://github.com/projectdiscovery/nuclei-templates.git templates
 
 The configuration for NucleiVuln should be defined in a Python file (e.g., ``~/.NucleiVuln/conf.py``).
 You must then set an environment variable (``NUCLEIVULN_CONFIG``) with the full path to this file.
+
+## Usage
+
+```bash
+$ NucleiVuln --help
+usage: NucleiVuln [-h] [--init]
+
+Find new Nuclei templates related to a vulnerability in a Git repository.
+
+options:
+  -h, --help  show this help message and exit
+  --init      Find Nuclei templates even if no new commits were detected.
+```
+
 
 
 ## License
