@@ -4,6 +4,13 @@ A client designed to retrieve vulnerability-related information from the Nuclei 
 The gathered data is subsequently transmitted to the
 [Vulnerability-Lookup](https://github.com/cve-search/vulnerability-lookup) API.
 
+Templates form the core of the Nuclei scanner. When a template is linked to a vulnerability, the resulting detection
+(observation) is classified as _confirmed_, signifying a higher level of certainty compared to the _seen_ classification.
+More information about the sightings:
+
+- [https://www.misp-project.org/taxonomies.html#](Corresponding MISP taxonomy)
+- [https://vulnerability-lookup.readthedocs.io/en/latest/sightings.html#sightings](Vulnerability-Lookup documentation)
+
 
 ## Installation
 
@@ -31,7 +38,6 @@ options:
   -h, --help  show this help message and exit
   --init      Find Nuclei templates even if no new commits were detected.
 ```
-
 
 
 ## License
