@@ -62,7 +62,7 @@ def find_all_cve_yaml_files_with_dates():
     cve_files_with_dates = []
     try:
         for root, _, files in os.walk(REPO_PATH):
-            for file in files[:1]:
+            for file in files:
                 if file.endswith(".yaml") and CVE_PATTERN_YAML.match(file):
                     file_path = os.path.relpath(os.path.join(root, file), REPO_PATH)
                     if CVE_DIR in file_path:
@@ -109,27 +109,29 @@ def push_sighting_to_vulnerability_lookup(
         "accept": "application/json",
         "X-API-KEY": f"{config.vulnerability_auth_token}",
     }
+    # source = f"sighting:source=nuclei_template://{nuclei_template}"
+    source = f"https://github.com/projectdiscovery/nuclei-templates/tree/main/{nuclei_template}"
     sighting = {
-        "type": "seen",
-        "source": "sighting:source=nuclei_template://" + nuclei_template,
+        "type": config.sighthing_type,
+        "source": source,
         "vulnerability": vulnerability,
         "creation_timestamp": creation_date,
     }
-    print(sighting)
-    # try:
-    #     r = requests.post(
-    #         urllib.parse.urljoin(config.vulnerability_lookup_base_url, "sighting/"),
-    #         json=sighting,
-    #         headers=headers_json,
-    #     )
-    #     if r.status_code not in (200, 201):
-    #         print(
-    #             f"Error when sending POST request to the Vulnerability Lookup server: {r.reason}"
-    #         )
-    # except requests.exceptions.ConnectionError as e:
-    #     print(
-    #         f"Error when sending POST request to the Vulnerability Lookup server:\n{e}"
-    #     )
+    # print(sighting)
+    try:
+        r = requests.post(
+            urllib.parse.urljoin(config.vulnerability_lookup_base_url, "sighting/"),
+            json=sighting,
+            headers=headers_json,
+        )
+        if r.status_code not in (200, 201):
+            print(
+                f"Error when sending POST request to the Vulnerability Lookup server: {r.reason}"
+            )
+    except requests.exceptions.ConnectionError as e:
+        print(
+            f"Error when sending POST request to the Vulnerability Lookup server:\n{e}"
+        )
 
 
 def main() -> None:
@@ -156,7 +158,7 @@ def main() -> None:
             for file in new_cve_files:
                 vuln_id = file.split("/")[-1].replace(".yaml", "")
                 creation_date = get_file_creation_date(file)
-                print(f" - {file} (Created on: {creation_date})")
+                print(f"NEW - {file} (Created on: {creation_date})")
                 push_sighting_to_vulnerability_lookup(file, vuln_id, creation_date)
         else:
             print("No new CVE YAML files found.")
@@ -166,7 +168,7 @@ def main() -> None:
         if cve_files_with_dates:
             print("CVE YAML files found in the repository:")
             for file, vuln_id, creation_date in cve_files_with_dates:
-                print(f" - {file} (Created on: {creation_date})")
+                print(f"NEW - {file} (Created on: {creation_date})")
                 push_sighting_to_vulnerability_lookup(file, vuln_id, creation_date)
         else:
             print("No CVE YAML files found in the repository.")
