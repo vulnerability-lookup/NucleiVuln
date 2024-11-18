@@ -34,7 +34,7 @@ def get_new_commits():
     """Get new commits since the last pull."""
     try:
         result = subprocess.run(
-            ["git", "log", "--since='2 day ago'", "--name-status"],
+            ["git", "log", "--since='4 day ago'", "--name-status"],
             cwd=REPO_PATH,
             check=True,
             text=True,

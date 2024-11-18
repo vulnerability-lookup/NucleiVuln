@@ -8,8 +8,8 @@ Templates form the core of the Nuclei scanner. When a template is linked to a vu
 (observation) is classified as _confirmed_, signifying a higher level of certainty compared to the _seen_ classification.
 More information about the sightings:
 
-- [https://www.misp-project.org/taxonomies.html#](Corresponding MISP taxonomy)
-- [https://vulnerability-lookup.readthedocs.io/en/latest/sightings.html#sightings](Vulnerability-Lookup documentation)
+- [Corresponding MISP taxonomy](https://www.misp-project.org/taxonomies.html#)
+- [Vulnerability-Lookup documentation](https://vulnerability-lookup.readthedocs.io/en/latest/sightings.html#sightings)
 
 
 ## Installation
