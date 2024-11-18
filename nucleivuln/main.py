@@ -34,7 +34,7 @@ def get_new_commits():
     """Get new commits since the last pull."""
     try:
         result = subprocess.run(
-            ["git", "log", "--since='1 minute ago'", "--name-status"],
+            ["git", "log", "--since='2 day ago'", "--name-status"],
             cwd=REPO_PATH,
             check=True,
             text=True,
@@ -66,11 +66,7 @@ def find_all_cve_yaml_files_with_dates():
                 if file.endswith(".yaml") and CVE_PATTERN_YAML.match(file):
                     file_path = os.path.relpath(os.path.join(root, file), REPO_PATH)
                     if CVE_DIR in file_path:
-                        match = CVE_PATTERN.match(file)
-                        if match:
-                            vuln_id = match.group(0)
-                        else:
-                            continue
+                        vuln_id = file.split("/")[-1].replace(".yaml", "")
                         creation_date = get_file_creation_date(file_path)
                         cve_files_with_dates.append((file_path, vuln_id, creation_date))
     except Exception as e:
@@ -158,11 +154,7 @@ def main() -> None:
         if new_cve_files:
             print("New CVE YAML files detected:")
             for file in new_cve_files:
-                match = CVE_PATTERN.match(file)
-                if match:
-                    vuln_id = match.group(0)
-                else:
-                    continue
+                vuln_id = file.split("/")[-1].replace(".yaml", "")
                 creation_date = get_file_creation_date(file)
                 print(f" - {file} (Created on: {creation_date})")
                 push_sighting_to_vulnerability_lookup(file, vuln_id, creation_date)
