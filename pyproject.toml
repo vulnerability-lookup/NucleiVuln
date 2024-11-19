@@ -1,15 +1,15 @@
 [tool.poetry]
 name = "NucleiVuln"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["Cédric Bonhomme <cedric@cedricbonhomme.org>"]
 license = "GPL-3.0-or-later"
 readme = "README.md"
 
-# homepage = ""
-# repository = ""
+homepage = "https://github.com/cedricbonhomme/NucleiVuln"
+repository = "https://github.com/cedricbonhomme/NucleiVuln"
 
-keywords = ["Vulnerability-Lookup", "Vulnerability", "CVE", "Nuclei"]
+keywords = ["Vulnerability-Lookup", "Vulnerability", "CVE", "Nuclei", "PyVulnerabilityLookup"]
 
 classifiers = [
     "Development Status :: 5 - Production/Stable",
