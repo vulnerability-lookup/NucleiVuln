@@ -86,7 +86,9 @@ def get_file_creation_date(file_path):
         creation_date_raw = result.stdout.strip()
         if creation_date_raw:
             # Parse the RFC2822 date and convert it to a UTC-aware datetime object
-            creation_date = datetime.strptime(creation_date_raw, "%a, %d %b %Y %H:%M:%S %z")
+            creation_date = datetime.strptime(
+                creation_date_raw, "%a, %d %b %Y %H:%M:%S %z"
+            )
             return creation_date
         return None
     except subprocess.CalledProcessError as e:
@@ -99,7 +101,9 @@ def push_sighting_to_vulnerability_lookup(
 ):
     """Create a sighting from an incoming status and push it to the Vulnerability Lookup instance."""
     print("Pushing sighting to Vulnerability Lookup...")
-    vuln_lookup = PyVulnerabilityLookup(config.vulnerability_lookup_base_url, token=config.vulnerability_auth_token)
+    vuln_lookup = PyVulnerabilityLookup(
+        config.vulnerability_lookup_base_url, token=config.vulnerability_auth_token
+    )
 
     # Create the sighting
     sighting = {

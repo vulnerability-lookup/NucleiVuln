@@ -18,9 +18,7 @@ def load_config(path):
 
 conf = None
 try:
-    conf = load_config(
-        os.environ.get("NUCLEIVULN_CONFIG", "nucleivuln/conf_sample.py")
-    )
+    conf = load_config(os.environ.get("NUCLEIVULN_CONFIG", "nucleivuln/conf_sample.py"))
 except Exception as exc:
     raise Exception("No configuration file provided.") from exc
 finally:
