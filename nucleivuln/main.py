@@ -2,11 +2,10 @@ import argparse
 import os
 import re
 import subprocess
-import urllib.parse
 from datetime import datetime
 from pathlib import Path
 
-import requests  # type: ignore[import-untyped]
+from pyvulnerabilitylookup import PyVulnerabilityLookup
 
 from nucleivuln import config
 
@@ -75,7 +74,7 @@ def find_all_cve_yaml_files_with_dates():
 
 
 def get_file_creation_date(file_path):
-    """Get the creation date of a file from Git."""
+    """Get the creation date of a file from Git as a UTC-aware datetime object."""
     try:
         result = subprocess.run(
             ["git", "log", "--diff-filter=A", "--format=%aD", "--", file_path],
@@ -86,17 +85,13 @@ def get_file_creation_date(file_path):
         )
         creation_date_raw = result.stdout.strip()
         if creation_date_raw:
-            # Parse the RFC2822 date and format it to the specified format
-            creation_date = datetime.strptime(
-                creation_date_raw, "%a, %d %b %Y %H:%M:%S %z"
-            )
-            return (
-                creation_date.strftime("%Y-%m-%dT%H:%M:%S.%fZ")[:-3] + "Z"
-            )  # Trim microseconds to milliseconds
-        return "Unknown"
+            # Parse the RFC2822 date and convert it to a UTC-aware datetime object
+            creation_date = datetime.strptime(creation_date_raw, "%a, %d %b %Y %H:%M:%S %z")
+            return creation_date
+        return None
     except subprocess.CalledProcessError as e:
         print(f"Failed to get creation date for {file_path}: {e}")
-        return "Unknown"
+        return None
 
 
 def push_sighting_to_vulnerability_lookup(
@@ -104,31 +99,20 @@ def push_sighting_to_vulnerability_lookup(
 ):
     """Create a sighting from an incoming status and push it to the Vulnerability Lookup instance."""
     print("Pushing sighting to Vulnerability Lookup...")
-    headers_json = {
-        "Content-Type": "application/json",
-        "accept": "application/json",
-        "X-API-KEY": f"{config.vulnerability_auth_token}",
-    }
-    # source = f"sighting:source=nuclei_template://{nuclei_template}"
-    source = f"https://github.com/projectdiscovery/nuclei-templates/tree/main/{nuclei_template}"
+    vuln_lookup = PyVulnerabilityLookup(config.vulnerability_lookup_base_url, token=config.vulnerability_auth_token)
+
+    # Create the sighting
     sighting = {
         "type": config.sighthing_type,
-        "source": source,
+        "source": f"https://github.com/projectdiscovery/nuclei-templates/tree/main/{nuclei_template}",
         "vulnerability": vulnerability,
         "creation_timestamp": creation_date,
     }
-    # print(sighting)
+
+    # Post the JSON to Vulnerability Lookup
     try:
-        r = requests.post(
-            urllib.parse.urljoin(config.vulnerability_lookup_base_url, "sighting/"),
-            json=sighting,
-            headers=headers_json,
-        )
-        if r.status_code not in (200, 201):
-            print(
-                f"Error when sending POST request to the Vulnerability Lookup server: {r.reason}"
-            )
-    except requests.exceptions.ConnectionError as e:
+        vuln_lookup.create_sighting(sighting=sighting)
+    except Exception as e:
         print(
             f"Error when sending POST request to the Vulnerability Lookup server:\n{e}"
         )
