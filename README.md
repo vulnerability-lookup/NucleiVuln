@@ -2,7 +2,7 @@
 
 A client designed to retrieve vulnerability-related information from the Nuclei Git repository of templates.
 The retrieved data is then transmitted to the
-[Vulnerability-Lookup](https://github.com/cve-search/vulnerability-lookup) API as sightings.
+[Vulnerability-Lookup](https://github.com/vulnerability-lookup/vulnerability-lookup) API as sightings.
 
 Templates form the core of the Nuclei scanner. When a template is linked to a vulnerability, the resulting detection
 (observation) is classified as _confirmed_, signifying a higher level of certainty compared to the _seen_ classification.
