@@ -9,7 +9,7 @@ Templates form the core of the Nuclei scanner. When a template is linked to a vu
 More information about the sightings:
 
 - [Corresponding MISP taxonomy](https://github.com/MISP/misp-taxonomies/blob/fd2fbaf2a450e42a490551e5a8e2fa6df039a6b8/vulnerability/machinetag.json#L26-L63)
-- [Vulnerability-Lookup documentation](https://vulnerability-lookup.readthedocs.io/en/latest/sightings.html#sightings)
+- [Vulnerability-Lookup documentation](https://www.vulnerability-lookup.org/documentation/sightings.html)
 
 
 ## Installation
