@@ -8,6 +8,7 @@ from pathlib import Path
 from pyvulnerabilitylookup import PyVulnerabilityLookup
 
 from nucleivuln import config
+from nucleivuln.monitoring import heartbeat, log
 
 # Constants
 REPO_PATH = config.nuclei_git_repository
@@ -99,8 +100,8 @@ def get_file_creation_date(file_path):
 def push_sighting_to_vulnerability_lookup(
     nuclei_template, vulnerability, creation_date
 ):
-    """Create a sighting from an incoming status and push it to the Vulnerability Lookup instance."""
-    print("Pushing sighting to Vulnerability Lookup...")
+    """Create a sighting from an incoming status and push it to the Vulnerability-Lookup instance."""
+    print("Pushing sighting to Vulnerability-Lookup…")
     vuln_lookup = PyVulnerabilityLookup(
         config.vulnerability_lookup_base_url, token=config.vulnerability_auth_token
     )
@@ -113,15 +114,23 @@ def push_sighting_to_vulnerability_lookup(
         "creation_timestamp": creation_date,
     }
 
-    # Post the JSON to Vulnerability Lookup
+    # Post the JSON to Vulnerability-Lookup
     try:
         r = vuln_lookup.create_sighting(sighting=sighting)
         if "message" in r:
             print(r["message"])
+            if "duplicate" in r["message"]:
+                level = "info"
+            else:
+                level = "warning"
+            log(
+                level, f"push_sighting_to_vulnerability_lookup: {r['message']}"
+            )
     except Exception as e:
         print(
-            f"Error when sending POST request to the Vulnerability Lookup server:\n{e}"
+            f"Error when sending POST request to the Vulnerability-Lookup server:\n{e}"
         )
+        log("info", f"Error when sending POST request to the Vulnerability-Lookup server: {e}")
 
 
 def main() -> None:
@@ -137,7 +146,14 @@ def main() -> None:
 
     arguments = parser.parse_args()
 
+    # Log the launch of the script
+    log("info", "Starting NucleiVuln…")
+
+    # Sends a heartbeat when the script launches
+    heartbeat()
+
     if not git_pull():
+        log("info", "No new commit. NucleiVuln execution completed.")
         return
 
     commit_logs = get_new_commits()
@@ -149,19 +165,25 @@ def main() -> None:
                 vuln_id = file.split("/")[-1].replace(".yaml", "")
                 creation_date = get_file_creation_date(file)
                 print(f"NEW - {file} (Created on: {creation_date})")
+                log("info", f"NEW - {file} (Created on: {creation_date})")
                 push_sighting_to_vulnerability_lookup(file, vuln_id, creation_date)
         else:
             print("No new CVE YAML files found.")
     elif arguments.init:
-        print("No new commits detected. Searching the repository for CVE YAML files...")
+        print("No new commits detected. Searching the repository for CVE YAML files…")
         cve_files_with_dates = find_all_cve_yaml_files_with_dates()
         if cve_files_with_dates:
             print("CVE YAML files found in the repository:")
             for file, vuln_id, creation_date in cve_files_with_dates:
                 print(f"NEW - {file} (Created on: {creation_date})")
+                log("info", f"NEW - {file} (Created on: {creation_date})")
                 push_sighting_to_vulnerability_lookup(file, vuln_id, creation_date)
         else:
             print("No CVE YAML files found in the repository.")
+            log("info", "No CVE YAML files found in the repository.")
+
+    # Log the end of the script
+    log("info", "NucleiVuln execution completed.")
 
 
 if __name__ == "__main__":

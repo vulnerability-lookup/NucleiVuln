@@ -32,3 +32,12 @@ vulnerability_auth_token = conf.vulnerability_auth_token
 nuclei_git_repository = conf.nuclei_git_repository
 
 sighthing_type = conf.sighting_type
+
+
+try:
+    heartbeat_enabled = True
+    valkey_host = conf.valkey_host
+    valkey_port = conf.valkey_port
+    expiration_period = conf.expiration_period
+except Exception:
+    heartbeat_enabled = False
