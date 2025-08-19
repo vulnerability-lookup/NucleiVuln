@@ -1,0 +1,17 @@
+name: "NuCleiVuln sighting client"
+
+services:
+
+  nucleivuln-client:
+    image: vuln_lookup_nucleivuln-client
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - APP_IMAGE=python:3.11-slim
+    restart: always
+    environment:
+      - PYTHONUNBUFFERED=TRUE
+      - NUCLEIVULN_CONFIG=/etc/conf.py
+    volumes:
+      - "./nucleivuln/conf.py:/etc/conf.py"

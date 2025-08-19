@@ -26,6 +26,26 @@ $ git clone https://github.com/projectdiscovery/nuclei-templates.git templates
 The configuration for NucleiVuln should be defined in a Python file (e.g., ``~/.NucleiVuln/conf.py``).
 You must then set an environment variable (``NUCLEIVULN_CONFIG``) with the full path to this file.
 
+
+### With Docker
+
+```bash
+git clone https://github.com/vulnerability-lookup/NucleiVuln
+cd NucleiVuln
+
+# Make sure conf.py exists in the project root before running
+docker compose up --build
+```
+
+> [!NOTE]
+> The docker-compose.yml expects a conf.py file in the root directory.
+> You can create it manually or copy the provided example:
+> 
+> ```bash
+> $ cp nucleivuln/conf_sample.py conf.py
+> ```
+
+
 ## Usage
 
 ```bash
