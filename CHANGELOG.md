@@ -1,5 +1,10 @@
 # Changelog
 
+## Release 1.0.1 (2025-09-17)
+
+Converts the sighting creation date into a UTC-aware datetime object in get_file_creation_date.
+
+
 ## Release 1.0.0 (2025-02-13)
 
 This release introduces the capability to report errors, warnings,
