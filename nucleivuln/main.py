@@ -2,7 +2,7 @@ import argparse
 import os
 import re
 import subprocess
-from datetime import datetime
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 from pyvulnerabilitylookup import PyVulnerabilityLookup
@@ -74,6 +74,8 @@ def find_all_cve_yaml_files_with_dates():
     return cve_files_with_dates
 
 
+
+
 def get_file_creation_date(file_path):
     """Get the creation date of a file from Git as a UTC-aware datetime object."""
     try:
@@ -86,15 +88,13 @@ def get_file_creation_date(file_path):
         )
         creation_date_raw = result.stdout.strip()
         if creation_date_raw:
-            # Parse the RFC2822 date and convert it to a UTC-aware datetime object
-            creation_date = datetime.strptime(
-                creation_date_raw, "%a, %d %b %Y %H:%M:%S %z"
-            )
+            creation_date = parsedate_to_datetime(creation_date_raw)
             return creation_date
         return None
     except subprocess.CalledProcessError as e:
         print(f"Failed to get creation date for {file_path}: {e}")
         return None
+
 
 
 def push_sighting_to_vulnerability_lookup(
@@ -132,6 +132,7 @@ def push_sighting_to_vulnerability_lookup(
         )
         log("info", f"Error when sending POST request to the Vulnerability-Lookup server: {e}")
 
+    print("\n")
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -171,8 +172,7 @@ def main() -> None:
             print("No new CVE YAML files found.")
     elif arguments.init:
         print("No new commits detected. Searching the repository for CVE YAML files…")
-        cve_files_with_dates = find_all_cve_yaml_files_with_dates()
-        if cve_files_with_dates:
+        if cve_files_with_dates := find_all_cve_yaml_files_with_dates():
             print("CVE YAML files found in the repository:")
             for file, vuln_id, creation_date in cve_files_with_dates:
                 print(f"NEW - {file} (Created on: {creation_date})")
